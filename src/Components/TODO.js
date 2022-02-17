@@ -10,17 +10,10 @@ const dataFromLS = () => {
   }
 };
 
-const date1 = new Date();
-const date2 = new Date('02/17/2022');
-const diffTime = Math.abs(date2 - date1);
-const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
-console.log(diffTime + " milliseconds");
-console.log(diffDays + " days");
-
 const TODO = () => {
   // Main array of tasks
   const [tasks, setTasks] = useState(dataFromLS());
- 
+
   // input collection
   const [title, setTitle] = useState("");
   const [desc, setDesc] = useState("");
@@ -33,20 +26,17 @@ const TODO = () => {
       title,
       desc,
       date,
-      completed: false
+      completed: false,
     };
     setTasks([...tasks, task]);
     setTitle("");
     setDesc("");
     setDate("");
-    let currentDay = new Date();
-    console.log(currentDay);
   };
 
   useEffect(() => {
     localStorage.setItem("tasks", JSON.stringify(tasks));
   }, [tasks]);
-
 
   const deleteTask = (i) => {
     const filteredTasks = tasks.filter((element, index) => {
@@ -56,15 +46,15 @@ const TODO = () => {
   };
 
   const toggleComplete = (i) => {
-      const updatedTasks = tasks.map((ele, index) => {
-        if(index == i){
-          ele.completed = !ele.completed
-        }
-        return ele
-      })
+    const updatedTasks = tasks.map((ele, index) => {
+      if (index === i) {
+        ele.completed = !ele.completed;
+      }
+      return ele;
+    });
 
-      setTasks(updatedTasks);
-  }
+    setTasks(updatedTasks);
+  };
 
   return (
     <div className="container-fluid">
@@ -109,30 +99,78 @@ const TODO = () => {
         <div className="col-md-6 d-flex justify-content-center align-items-center">
           {tasks.length > 0 && (
             <>
-              <div className="list_container">
+              <div className="list_container m-3">
+              <h2 className="subhead text-center"> My Task List</h2>
                 {tasks.map((ele, i) => {
+                  let date1 = new Date();
+                  let datePassed;
+                  let date2 = new Date(ele.date); date2.setDate (date2.getDate () + 1);
+                  if (date1.getTime() < date2.getTime()) datePassed = false;
+                  else if (date1.getTime() > date2.getTime()) datePassed = true;
+
                   return (
-                    <div className="list_box p-2 m-2" key={i}>
-                      <div className="d-flex justify-content-center align-items-center mx-2">
-                        <button className="check_box">
-                          <input type="checkbox"
-                           checked={ele.completed}
-                           onChange={() => toggleComplete(i)} />
-                        </button>
+                    <div key={i}>
+                      <div
+                        className=" row list_box p-2 m-2"
+                        style={{
+                          border:
+                            datePassed === true && ele.completed === false
+                              ? "2px solid yellow"
+                              : "2px solid #007ACC",
+                        }}
+                      >
+                        <div className="d-flex col-1 justify-content-center align-items-center mx-2">
+                          <button className="check_box">
+                            <input
+                              type="checkbox"
+                              checked={ele.completed}
+                              onChange={() => toggleComplete(i)}
+                            />
+                          </button>
+                        </div>
+                        <div className=" col-7 task_item px-2">
+                          <dt
+                            style={{
+                              textDecoration:
+                                ele.completed === true
+                                  ? "line-through"
+                                  : "none",
+                            }}
+                          >
+                            {" "}
+                            {ele.title}
+                          </dt>
+                          <dl
+                            style={{
+                              textDecoration:
+                                ele.completed === true
+                                  ? "line-through"
+                                  : "none",
+                            }}
+                          >
+                            {ele.desc}
+                          </dl>
+                          <p
+                            style={{
+                              textDecoration:
+                                ele.completed === true
+                                  ? "line-through"
+                                  : "none",
+                            }}
+                          >
+                            {ele.date}{" "}
+                          </p>
+                        </div>
+                        <div className="col-3 d-flex justify-content-center align-items-center deletebtn_con mx-2">
+                          <button
+                            className="btn btn-danger"
+                            onClick={() => deleteTask(i)}
+                          >
+                            Delete
+                          </button>
+                        </div>
                       </div>
-                      <div className="task_item px-2">
-                        <dt style={{ textDecoration : ele.completed == true ? "line-through":"none" }}> {ele.title}</dt>
-                        <dl style={{ textDecoration : ele.completed == true ? "line-through":"none" }}>{ele.desc}</dl>
-                        <p style={{ textDecoration : ele.completed == true ? "line-through":"none" }}>{ele.date} </p>
-                      </div>
-                      <div className="deletebtn_con mx-2">
-                        <button
-                          className="btn btn-danger"
-                          onClick={() => deleteTask(i)}
-                        >
-                          Delete
-                        </button>
-                      </div>
+                      <p className="alert_text"> {datePassed === true && ele.completed === false ? "Due date passed" : ""} </p>
                     </div>
                   );
                 })}

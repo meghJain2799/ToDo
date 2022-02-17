@@ -37,12 +37,13 @@
     
 }
 
+.alert_text{
+    color: red;
+}
+
 .list_box{
-    border: 2px solid #007ACC;
     display: flex;
     border-radius: 15px;
-    display: flex;
-    justify-content: space-between;
 }
 
 
